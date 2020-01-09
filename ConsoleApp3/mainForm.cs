@@ -31,17 +31,17 @@ namespace ConsoleApp3
             int wWidth = 50;
             int wHeight = 10;
             string map = ".................................................." +
-                         "...........................##...##....######......" +
-                         ".................................................." +
-                         "..............................#########..........." +
-                         ".................................................." +
-                         ".................................#################" +
-                         ".................................................." +
-                         "##############################..............####.." +
+                         "##.........................###.....#..######......" +
+                         "##.........................................##....." +
+                         "##................................................" +
+                         "##.......................................#########" +
+                         "##...............................#################" +
+                         "##................................................" +
+                         "##..........................................####.." +
                          "###.##...##...#########.....################......" +
                          ".................................................." ;
             world = new World(map, wWidth, wHeight, 600);
-            player = new Character(new Point(0, 0), 32, 32);
+            player = new Character(new Point(100, 0), 32, 64);
             camera = new Point(0, 0);
             ft = new FrameTimer();
             this.DoubleBuffered = true;
@@ -63,8 +63,8 @@ namespace ConsoleApp3
 
         private bool checkCollision(RectangleF a, RectangleF b)
         {
-            if( a.X >= (b.X - a.Width + 0.1) && a.X <= (b.X + b.Width - 0.1) && 
-                a.Y >= (b.Y - a.Height + 0.1) && a.Y <= (b.Y + b.Height - 0.1))
+            if( a.X >= (b.X - a.Width + 0.01) && a.X <= (b.X + b.Width - 0.01) && 
+                a.Y >= (b.Y - a.Height + 0.01) && a.Y <= (b.Y + b.Height - 0.01))
             {
                 return true;
             }
@@ -80,42 +80,66 @@ namespace ConsoleApp3
             }
 
             // update player position
-            if(Keyboard.KeyPress(Keys.Left))
+            if(player.wallJumpTime > 0)
             {
-                player.velocity = new PointF(-100, player.velocity.Y);
+                // if in wall jump time, dont change velocity
+            }
+            else if(Keyboard.KeyPress(Keys.Left))
+            {
+                player.velocity = new PointF(-140, player.velocity.Y);
             } 
             else if (Keyboard.KeyPress(Keys.Right))
             {
-                player.velocity = new PointF(100, player.velocity.Y);
+                player.velocity = new PointF(140, player.velocity.Y);
             }
             else
             {
                 player.velocity = new PointF(0, player.velocity.Y);
             }
 
+            // update wall jump time
+            player.wallJumpTime -= (float)dt;
+
             // check if player can jump or not
-            if(player.isOnTheGround && !Keyboard.KeyPress(Keys.Up))
+            if(!player.isOnTheGround && !player.isHangingWall)
+            {
+                player.canJump = false;
+            }
+            if(player.isOnTheGround && !Keyboard.KeyPress(Keys.Space))
+            {
+                player.canJump = true;
+            }
+            if(player.isHangingWall && !Keyboard.KeyPress(Keys.Space))
             {
                 player.canJump = true;
             }
 
             // if player can jump and key up is press, then jump
-            if (Keyboard.KeyPress(Keys.Up) && player.canJump)
+            if (Keyboard.KeyPress(Keys.Space) && player.canJump)
             {
-                player.velocity = new PointF(player.velocity.X, -450);
+                if (!player.isHangingWall)
+                {
+                    player.velocity = new PointF(player.velocity.X, -360);
+                }
+                else
+                {
+                    player.velocity = new PointF(-player.velocity.X, -370);
+                    player.wallJumpTime = 0.23f;
+                }
                 player.isOnTheGround = false;
                 player.isJumping = true;
                 player.canJump = false;
             }
 
             // apply gravity 
+            
             if (player.velocity.Y > 0 && player.isJumping)
             {
-                player.velocity = new PointF(player.velocity.X, player.velocity.Y + world.gravity * (float)dt * 2.7f);
+                player.velocity = new PointF(player.velocity.X, player.velocity.Y + world.gravity * (float)dt * 1.5f);
             }
             else if (player.isJumping && Keyboard.KeyPress(Keys.Up) == false)
             {
-                player.velocity = new PointF(player.velocity.X, player.velocity.Y + world.gravity * (float)dt * 2.0f);
+                player.velocity = new PointF(player.velocity.X, player.velocity.Y + world.gravity * (float)dt * 1.1f);
             }
             else
             {
@@ -125,6 +149,9 @@ namespace ConsoleApp3
             // collision 
             float newPlayerPosX = player.position.X + player.velocity.X * (float)dt;
             float newPlayerPosY = player.position.Y + player.velocity.Y * (float)dt;
+
+            // reset player hanging wall status
+            player.isHangingWall = false;
 
             if (player.velocity.X < 0)
             {
@@ -137,6 +164,7 @@ namespace ConsoleApp3
                                           new RectangleF(world.GetPosOfTile((int)newPlayerPosX / world.tileWidth, y), new Size(world.tileWidth, world.tileHeight))))
                         {
                             newPlayerPosX = world.GetPosOfTile((int)newPlayerPosX / world.tileWidth, y).X + world.tileWidth;
+                            player.isHangingWall = true;
                         }
                     }
                 }
@@ -151,12 +179,13 @@ namespace ConsoleApp3
                         if (checkCollision(new RectangleF(newPlayerPosX, player.position.Y, player.width, player.height),
                                            new RectangleF(world.GetPosOfTile((int)newPlayerPosX / world.tileWidth + 1, y), new Size(world.tileWidth, world.tileHeight))))
                         {
-                            newPlayerPosX = world.GetPosOfTile((int)newPlayerPosX / world.tileWidth + 1, y).X - world.tileWidth;
+                            newPlayerPosX = world.GetPosOfTile((int)newPlayerPosX / world.tileWidth + player.width / world.tileWidth, y).X - world.tileWidth;
+                            player.isHangingWall = true;
                         }
                     }
                 }
             }
-
+            
             if(player.velocity.Y < 0)
             {
                 // loop throught all brick in the top near the player from left to right of player
@@ -175,15 +204,16 @@ namespace ConsoleApp3
             }
             else if(player.velocity.Y > 0)
             {
+                player.isOnTheGround = false;
                 // loop throught all brick in the bottom near the player from left to right of player
                 for (int x = (int)newPlayerPosX / world.tileWidth; x <= (int)(newPlayerPosX + player.width - 1) / world.tileWidth; x++)
                 {
-                    if (world.GetChar(x, (int)newPlayerPosY / world.tileHeight + 1) == '#')
+                    if (world.GetChar(x, (int)((newPlayerPosY + player.height) / world.tileHeight)) == '#')
                     {
                         if (checkCollision(new RectangleF(newPlayerPosX, newPlayerPosY, player.width, player.height),
-                                          new RectangleF(world.GetPosOfTile(x, (int)newPlayerPosY / world.tileHeight + 1), new Size(world.tileWidth, world.tileHeight))))
+                                          new RectangleF(world.GetPosOfTile(x, (int)((newPlayerPosY + player.height) / world.tileHeight)), new Size(world.tileWidth, world.tileHeight))))
                         {
-                            newPlayerPosY = world.GetPosOfTile(x, (int)newPlayerPosY / world.tileHeight + 1).Y - world.tileHeight;
+                            newPlayerPosY = (int)(world.GetPosOfTile(x, (int)((newPlayerPosY + player.height) / world.tileHeight)).Y - player.height);
                             player.isOnTheGround = true;
                             player.velocity = new PointF(player.velocity.X, 0);
                             player.isJumping = false;
@@ -192,26 +222,33 @@ namespace ConsoleApp3
                 }
             }
 
+            // after check collision, we know if player is hanging on the edge of the wall or not
+            if (player.isHangingWall)
+            {
+                // when player is hanging on the wall, make him slide down slowly
+                player.velocity = new PointF(0, 40);
+            }
+
             player.position = new PointF(newPlayerPosX, newPlayerPosY);
 
-            // update camera position
-            //camera = new Point((int)(player.position.X - this.Width / 2), (int)(player.position.Y - this.Height / 2));
-            //if(camera.X < 0)
-            //{
-            //    camera = new Point(0, camera.Y);
-            //}
-            //if (camera.Y < 0)
-            //{
-            //    //camera = new Point(camera.X, 0);
-            //}
-            //if(camera.X > world.tileWidth*world.width - this.Width)
-            //{
-            //    camera = new Point(world.tileWidth * world.width - this.Width, camera.Y);
-            //}
-            //if (camera.Y > world.tileHeight * world.height - this.Height / 2)
-            //{
-            //    //camera = new Point(camera.X, world.tileHeight * world.height - this.Height / 2);
-            //}
+            //update camera position
+            camera = new Point((int)(player.position.X - this.Width / 2), (int)(player.position.Y - this.Height / 2));
+            if(camera.X < 0)
+            {
+                camera = new Point(0, camera.Y);
+            }
+            if (camera.Y < 0)
+            {
+                //camera = new Point(camera.X, 0);
+            }
+            if(camera.X > world.tileWidth*world.width - this.Width)
+            {
+                camera = new Point(world.tileWidth * world.width - this.Width, camera.Y);
+            }
+            if (camera.Y > world.tileHeight * world.height - this.Height / 2)
+            {
+                //camera = new Point(camera.X, world.tileHeight * world.height - this.Height / 2);
+            }
 
             this.Refresh(); // paint after update
         }
@@ -221,7 +258,9 @@ namespace ConsoleApp3
             Graphics gfx = e.Graphics;
             world.Draw(gfx, camera.X, camera.Y);
             player.Draw(gfx, camera.X, camera.Y);
-            gfx.DrawString(player.position.X.ToString(), new Font("Times New Roman", 20), new SolidBrush(Color.Black), new Point(120, 50));
+            //gfx.DrawString(player.position.X.ToString(), new Font("Times New Roman", 20), new SolidBrush(Color.Black), new Point(120, 50));
+            gfx.DrawString(((int)(player.position.Y / world.tileHeight) + (player.height / world.tileHeight)).ToString(), new Font("Times New Roman", 20), new SolidBrush(Color.Black), new Point(120, 100));
+            gfx.DrawString(player.isOnTheGround.ToString(), new Font("Times New Roman", 20), new SolidBrush(Color.Black), new Point(120, 150));
         }
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
