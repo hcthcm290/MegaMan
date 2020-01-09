@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bullet.cs" />
     <Compile Include="Character.cs" />
     <Compile Include="FrameTimer.cs" />
     <Compile Include="Keyboard.cs" />

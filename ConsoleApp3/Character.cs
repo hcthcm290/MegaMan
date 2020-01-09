@@ -16,13 +16,22 @@ namespace ConsoleApp3
         public bool isOnTheGround { get; set; }
         public bool isJumping { get; set; }
         public bool canJump { get; set; }
+        public bool isHangingWall { get; set; }
+        public float wallJumpTime { get; set; }
+        public int direction { get; set; } // direction show the cheracter is face left or right
+                                           // 0: left
+                                           // 1: right
+        public int kind { get; set; }// this show what kind of character, 
+                                     // if the bullet and character is the same kind, the bullet won't hurt
 
-        public Character(Point location, int width, int height)
+        public Character(Point location, int width, int height, int kind = 0)
         {
             this.position = location;
             this.width = width;
             this.height = height;
-            isOnTheGround = false;
+            this.isOnTheGround = false;
+            this.wallJumpTime = 0f;
+            this.kind = kind;
         }
 
         public void Draw(Graphics gfx, int xCam, int yCam)
