@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace ConsoleApp3
 {
-    class Character
+    abstract class Character
     {
         public PointF position { get; set; }
         public PointF velocity { get; set; }
@@ -18,13 +18,16 @@ namespace ConsoleApp3
         public bool canJump { get; set; }
         public bool isHangingWall { get; set; }
         public float wallJumpTime { get; set; }
-        public int direction { get; set; } // direction show the cheracter is face left or right
+        public int direction { get; set; } // direction show the character is face left or right
                                            // 0: left
                                            // 1: right
         public int kind { get; set; }// this show what kind of character, 
                                      // if the bullet and character is the same kind, the bullet won't hurt
+        public float maxHealth { get; set; }
 
-        public Character(Point location, int width, int height, int kind = 0)
+        public float curHealth { get; set; }
+
+        public Character(Point location, int width, int height, float maxHealth, int kind = 0)
         {
             this.position = location;
             this.width = width;
@@ -32,11 +35,14 @@ namespace ConsoleApp3
             this.isOnTheGround = false;
             this.wallJumpTime = 0f;
             this.kind = kind;
+            this.maxHealth = this.curHealth = maxHealth;
         }
 
         public void Draw(Graphics gfx, int xCam, int yCam)
         {
             gfx.FillRectangle(new SolidBrush(Color.Blue), new Rectangle((int)position.X - xCam, (int)position.Y - yCam, width, height));
         }
+
+        abstract public void Update(double dt, World world);
     }
 }

@@ -18,6 +18,9 @@ namespace ConsoleApp3
 
         public float gravity { get; set; }
 
+        // this contains all bullets are in the world
+        public List<Bullet> bullets;
+
         public char GetChar(int x, int y)
         {
             if (x >= 0 && x < width && y >= 0 && y < height)
@@ -42,6 +45,41 @@ namespace ConsoleApp3
             this.height = height;
             tileWidth = tileHeight = 32;
             this.gravity = gravity;
+            this.bullets = new List<Bullet>();
+        }
+
+        public void Update(double dt)
+        {
+            // make bullet disapear when hit the wall
+            for (int i = 0; i < bullets.Count;)
+            {
+                bool collision = false;
+                for (int x = 0; x < width; x++)
+                {
+                    for (int y = 0; y < height; y++)
+                    {
+                        if (map[y * width + x] == '#' && 
+                            Function.checkCollision(bullets[i].position.X + bullets[i].radius/2, bullets[i].position.Y + bullets[i].radius/2, bullets[i].radius,
+                                                    new Rectangle(GetPosOfTile(x, y), new Size(tileWidth, tileHeight))))
+                        {
+                            collision = true;
+                        }
+                    }
+                }
+                if(collision)
+                {
+                    bullets.RemoveAt(i);
+                }
+                else
+                {
+                    i++;
+                }
+            }
+
+            foreach (var bullet in bullets)
+            {
+                bullet.Update(dt);
+            }
         }
 
         public void Draw(Graphics gfx, int xCam, int yCam)
@@ -62,6 +100,11 @@ namespace ConsoleApp3
                             break;
                     }
                 }
+            }
+
+            foreach (var bullet in bullets)
+            {
+                bullet.Draw(gfx, xCam, yCam);
             }
         }
     }

@@ -63,10 +63,12 @@
     <Compile Include="Bullet.cs" />
     <Compile Include="Character.cs" />
     <Compile Include="FrameTimer.cs" />
+    <Compile Include="Function.cs" />
     <Compile Include="Keyboard.cs" />
     <Compile Include="mainForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Monster.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -75,6 +77,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="World.cs" />
+    <Compile Include="Zero.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
