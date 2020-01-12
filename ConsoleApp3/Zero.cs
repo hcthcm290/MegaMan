@@ -15,7 +15,10 @@ namespace ConsoleApp3
         public Bitmap bmp;
         public Bitmap bmpMirror;
 
-        List<Rectangle> moving;
+        private int curFrame;
+        private float timeToNextFrame; // only update frame when timeToNextFrame = 0
+
+        bool shooting;
 
         public Zero(Point location, int width, int height, float health, int kind = 0)
             :
@@ -23,10 +26,9 @@ namespace ConsoleApp3
         {
             bmp = new Bitmap("megaman.png");
             bmp.MakeTransparent();
-            bmpMirror = new Bitmap(bmp.Width, bmp.Height);
-            for (int i = 0; i < bmp.Height; i++)
-                for (int j = 0; j < bmp.Width; j++)
-                    bmpMirror.SetPixel(i, j, bmp.GetPixel(bmp.Width - j - 1, i));
+            bmpMirror = new Bitmap("megaman.png");
+            bmpMirror.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            bmpMirror.MakeTransparent();
         }
 
         public override void Update(double dt, World world)
@@ -195,11 +197,11 @@ namespace ConsoleApp3
             {
                 if(this.direction == 0)
                 {
-                    world.bullets.Add(new Bullet(this.position, new PointF(-600, 0), 30));
+                    world.bullets.Add(new Bullet(new PointF(this.position.X, this.position.Y + 30), new PointF(-600, 0), 30));
                 }
                 if (this.direction == 1)
                 {
-                    world.bullets.Add(new Bullet(new PointF(this.position.X + this.width, this.position.Y), new PointF(600, 0), 30));
+                    world.bullets.Add(new Bullet(new PointF(this.position.X + this.width, this.position.Y + 30), new PointF(600, 0), 30));
                 }
                 timeToNextAtk = 0.15f;
             }
@@ -220,11 +222,72 @@ namespace ConsoleApp3
             }
 
             #endregion
+
+            #region update Frame
+
+            timeToNextFrame -= (float)dt;
+            if(timeToNextFrame < 0)
+            {
+                curFrame++;
+                timeToNextFrame = 0.05f;
+            }
+
+            if(velocity.X > 0 || velocity.X < 0)
+            {
+                curFrame %= 10;
+                if(curFrame == 0)
+                {
+                    curFrame = 2;
+                }
+            }
+
+            if(Keyboard.KeyPress(Keys.C))
+            {
+                shooting = true;
+            }
+            else
+            {
+                shooting = false;
+            }
+
+            #endregion
         }
 
         public new void Draw(Graphics gfx, int xCam, int yCam)
         {
-            gfx.DrawImage(bmp, new Rectangle((int)position.X - xCam - 10, (int)position.Y - yCam, 36, 48), 0, 0, 36, 48, GraphicsUnit.Pixel);
+            int yFrame;
+            if(shooting)
+            {
+                yFrame = 1;
+            }
+            else
+            {
+                yFrame = 0;
+            }
+            if (velocity.X > 0 && velocity.Y == 0) // running right
+            {
+                gfx.DrawImage(bmp, new Rectangle((int)position.X - xCam - 17, (int)position.Y - yCam - 11, 66, 82), 66 * curFrame, yFrame * 82, 66, 82, GraphicsUnit.Pixel);
+            }
+            else if(velocity.X < 0 && velocity.Y == 0) // running left
+            {
+                gfx.DrawImage(bmpMirror, new Rectangle((int)position.X - xCam - 17, (int)position.Y - yCam - 11, 66, 82), 66 * (9 - curFrame), yFrame * 82, 66, 82, GraphicsUnit.Pixel);
+            }
+            else if(direction == 1 && velocity.Y != 0) // jump or fall with face right
+            {
+                gfx.DrawImage(bmp, new Rectangle((int)position.X - xCam - 17, (int)position.Y - yCam - 11, 66, 82), 66, yFrame * 82, 66, 82, GraphicsUnit.Pixel);
+            }
+            else if(direction == 0 && velocity.Y != 0) // jump or fall with face left
+            {
+                gfx.DrawImage(bmpMirror, new Rectangle((int)position.X - xCam - 17, (int)position.Y - yCam - 11, 66, 82), 66*(9-1), yFrame * 82, 66, 82, GraphicsUnit.Pixel);
+            }
+            else if(direction == 1) // standing with face right
+            {
+                gfx.DrawImage(bmp, new Rectangle((int)position.X - xCam - 17, (int)position.Y - yCam - 11, 66, 82), 66*0, yFrame * 82, 66, 82, GraphicsUnit.Pixel);
+            }
+            else if(direction == 0) // standing with face left
+            {
+                gfx.DrawImage(bmpMirror, new Rectangle((int)position.X - xCam - 17, (int)position.Y - yCam - 11, 66, 82), 66*(9-0), yFrame * 82, 66, 82, GraphicsUnit.Pixel);
+            }
         }
     }
 }
