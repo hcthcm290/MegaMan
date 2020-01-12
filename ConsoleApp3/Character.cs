@@ -38,7 +38,7 @@ namespace ConsoleApp3
             this.maxHealth = this.curHealth = maxHealth;
         }
 
-        public void Draw(Graphics gfx, int xCam, int yCam)
+        public virtual void Draw(Graphics gfx, int xCam, int yCam)
         {
             gfx.FillRectangle(new SolidBrush(Color.Blue), new Rectangle((int)position.X - xCam, (int)position.Y - yCam, width, height));
         }
