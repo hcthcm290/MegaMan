@@ -16,7 +16,11 @@ namespace ConsoleApp3
                                       // if the bullet and character is the same kind, the bullet won't hurt
         public float damage { get; set; }
 
+        protected int curFrame;
+        protected float timeToNextFrame;
 
+        protected Bitmap bmp;
+        protected Bitmap bmpMirror;
 
         public Bullet(PointF position, PointF velocity, float damage, int kind = 0, float radius = 15)
         {
@@ -27,14 +31,16 @@ namespace ConsoleApp3
             this.damage = damage;
         }
 
-        public void Update(double dt)
+        virtual public void Update(double dt)
         {
+            // update position 
             this.position = new PointF((float)(this.position.X + this.velocity.X * dt), (float)(this.position.Y + this.velocity.Y * dt));
+
         }
 
         virtual public void Draw(Graphics gfx, int xCam, int yCam)
         {
-            gfx.FillEllipse(new SolidBrush(Color.Purple), new RectangleF(position.X - xCam, position.Y - yCam, radius, radius));
+            
         }
     }
 }

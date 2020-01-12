@@ -180,7 +180,7 @@ namespace ConsoleApp3
             }
 
             // after check collision, we know if this is hanging on the edge of the wall or not
-            if (this.isHangingWall)
+            if (this.isHangingWall && !this.isOnTheGround)
             {
                 // when this is hanging on the wall, make him slide down slowly
                 this.velocity = new PointF(0, 80);
@@ -197,11 +197,11 @@ namespace ConsoleApp3
             {
                 if(this.direction == 0)
                 {
-                    world.bullets.Add(new Bullet(new PointF(this.position.X, this.position.Y + 30), new PointF(-600, 0), 30));
+                    world.bullets.Add(new ZeroBullet(new PointF(this.position.X, this.position.Y + 30), new PointF(-600, 0), 30));
                 }
                 if (this.direction == 1)
                 {
-                    world.bullets.Add(new Bullet(new PointF(this.position.X + this.width, this.position.Y + 30), new PointF(600, 0), 30));
+                    world.bullets.Add(new ZeroBullet(new PointF(this.position.X + this.width, this.position.Y + 30), new PointF(600, 0), 30));
                 }
                 timeToNextAtk = 0.15f;
             }

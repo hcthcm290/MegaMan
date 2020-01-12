@@ -78,6 +78,7 @@
     </Compile>
     <Compile Include="World.cs" />
     <Compile Include="Zero.cs" />
+    <Compile Include="ZeroBullet.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
