@@ -45,5 +45,16 @@ namespace ConsoleApp3
             }
             return false;
         }
+
+        static public PointF GetNormalization(PointF vector)
+        {
+            return new PointF(vector.X / (float)Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y),
+                              vector.Y / (float)Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y));
+        }
+
+        static public PointF VectorMultiply(PointF vector, float multipler)
+        {
+            return new PointF(vector.X * multipler, vector.Y * multipler);
+        }
     }
 }

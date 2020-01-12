@@ -31,7 +31,7 @@ namespace ConsoleApp3
             bmpMirror.MakeTransparent();
         }
 
-        public override void Update(double dt, World world)
+        public void Update(double dt, World world)
         {
             #region update position
             // update this position
@@ -251,6 +251,11 @@ namespace ConsoleApp3
             }
 
             #endregion
+        }
+
+        public override void Update(double dt, World world, Character character)
+        {
+            Update(dt, world);
         }
 
         public new void Draw(Graphics gfx, int xCam, int yCam)

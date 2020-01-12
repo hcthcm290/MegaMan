@@ -31,7 +31,7 @@ namespace ConsoleApp3
             bmpMirror.MakeTransparent(Color.White);
         }
 
-        public override void Update(double dt, World world)
+        public void Update(double dt, World world)
         {
             // update frame
             timeToNextFrame -= (float)dt;
@@ -46,11 +46,11 @@ namespace ConsoleApp3
             {
                 if (this.direction == 0)
                 {
-                    world.bullets.Add(new PeanutBullet(new PointF(this.position.X, this.position.Y + 10), new PointF(-500, 0), 30, 1));
+                    world.bullets.Add(new PeanutBullet(new PointF(this.position.X, this.position.Y + 10), new PointF(-500, 0), 30, this.kind));
                 }
                 if (this.direction == 1)
                 {
-                    world.bullets.Add(new PeanutBullet(new PointF(this.position.X + this.width, this.position.Y + 10), new PointF(500, 0), 30, 1));
+                    world.bullets.Add(new PeanutBullet(new PointF(this.position.X + this.width, this.position.Y + 10), new PointF(500, 0), 30, this.kind));
                 }
                 canShoot = false;
             }
@@ -58,6 +58,13 @@ namespace ConsoleApp3
             {
                 canShoot = true;
             }
+        }
+
+
+        public override void Update(double dt, World world, Character character)
+        {
+            Update(dt, world);
+
         }
 
         public override void Draw(Graphics gfx, int xCam, int yCam)

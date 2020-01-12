@@ -43,6 +43,9 @@ namespace ConsoleApp3
             gfx.FillRectangle(new SolidBrush(Color.Blue), new Rectangle((int)position.X - xCam, (int)position.Y - yCam, width, height));
         }
 
-        abstract public void Update(double dt, World world);
+        virtual public void Update(double dt, World world, Character character)
+        {
+
+        }
     }
 }
