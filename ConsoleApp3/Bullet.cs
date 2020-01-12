@@ -16,6 +16,8 @@ namespace ConsoleApp3
                                       // if the bullet and character is the same kind, the bullet won't hurt
         public float damage { get; set; }
 
+
+
         public Bullet(PointF position, PointF velocity, float damage, int kind = 0, float radius = 15)
         {
             this.position = position;
