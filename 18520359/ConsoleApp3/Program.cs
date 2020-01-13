@@ -9,7 +9,7 @@ namespace ConsoleApp3
 {
     class Program
     {
-        [STAThread]
+        [STAThread]        
         static void Main(string[] args)
         {
             MainForm mainForm = new MainForm();

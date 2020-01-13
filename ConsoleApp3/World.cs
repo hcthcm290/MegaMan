@@ -9,7 +9,7 @@ namespace ConsoleApp3
 {
     class World
     {
-        public string map { get; }
+        public string map { get; set; }
         public int width { get; }
         public int height { get; }
 

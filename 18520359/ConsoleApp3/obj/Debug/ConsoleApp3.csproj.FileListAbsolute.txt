@@ -6,5 +6,3 @@ C:\Users\drago\source\repos\ConsoleApp3\ConsoleApp3\bin\Debug\ConsoleApp3.exe
 C:\Users\drago\source\repos\ConsoleApp3\ConsoleApp3\bin\Debug\ConsoleApp3.pdb
 C:\Users\drago\source\repos\ConsoleApp3\ConsoleApp3\obj\Debug\ConsoleApp3.exe
 C:\Users\drago\source\repos\ConsoleApp3\ConsoleApp3\obj\Debug\ConsoleApp3.pdb
-C:\Users\drago\source\repos\ConsoleApp3\ConsoleApp3\bin\Debug\Database1.mdf
-C:\Users\drago\source\repos\ConsoleApp3\ConsoleApp3\bin\Debug\Database1_log.ldf

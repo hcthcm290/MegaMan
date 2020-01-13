@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Media;
 
 namespace ConsoleApp3
 {
@@ -25,6 +26,8 @@ namespace ConsoleApp3
 
         bool gameOver;
         bool gameWin;
+
+        SoundPlayer simpleSound;
 
         public MainForm()
         {
@@ -77,6 +80,9 @@ namespace ConsoleApp3
             camera = new Point(0, 0);
             ft = new FrameTimer();
             this.DoubleBuffered = true;
+
+            simpleSound = new SoundPlayer("mainMusic.wav");
+            simpleSound.Play();
         }
 
         private void InitializeComponent()
@@ -98,6 +104,7 @@ namespace ConsoleApp3
         {
             if(gameOver || gameWin)
             {
+                simpleSound.Stop();
                 return;
             }
             double dt = ft.GetDt();
@@ -114,9 +121,23 @@ namespace ConsoleApp3
             }
 
             // check if player is triggered boss or not
-            if(Function.Distance(player.position, boss.position) < 350)
+            if(Function.Distance(player.position, boss.position) < 350 && !boss.activated)
             {
+                char[] newMap = world.map.ToCharArray();
+                for(int x = 9; x<12; x++)
+                {
+                    for(int y=31; y<33; y++)
+                    {
+                        newMap[x * world.width + y] = '#';
+                    }
+                }
+                world.map = new string(newMap);
+
                 boss.activated = true;
+                simpleSound.Stop();
+
+                simpleSound.SoundLocation = "gwyn.wav";
+                simpleSound.Play();
             }
             boss.Update(dt, world, player);
 
