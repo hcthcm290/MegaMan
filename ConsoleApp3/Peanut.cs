@@ -65,6 +65,21 @@ namespace ConsoleApp3
         {
             Update(dt, world);
 
+            // update taking dmg
+            for (int i = 0; i < world.bullets.Count;)
+            {
+                if (Function.checkCollision(world.bullets[i].position.X + world.bullets[i].radius / 2, world.bullets[i].position.Y + world.bullets[i].radius / 2, world.bullets[i].radius,
+                   new Rectangle((int)position.X, (int)position.Y, width, height)) &&
+                   world.bullets[i].kind != kind)
+                {
+                    curHealth -= world.bullets[i].damage;
+                    world.bullets.RemoveAt(i);
+                }
+                else
+                {
+                    i++;
+                }
+            }
         }
 
         public override void Draw(Graphics gfx, int xCam, int yCam)

@@ -62,6 +62,8 @@
   <ItemGroup>
     <Compile Include="Bee.cs" />
     <Compile Include="BeeBullet.cs" />
+    <Compile Include="Boss.cs" />
+    <Compile Include="BossBullet.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="Character.cs" />
     <Compile Include="FrameTimer.cs" />

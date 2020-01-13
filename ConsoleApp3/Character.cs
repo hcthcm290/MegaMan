@@ -47,5 +47,10 @@ namespace ConsoleApp3
         {
 
         }
+
+        public virtual void ApplyDmg(float dmg)
+        {
+
+        }
     }
 }

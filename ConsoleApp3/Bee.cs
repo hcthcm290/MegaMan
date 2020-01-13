@@ -123,6 +123,22 @@ namespace ConsoleApp3
                                                 Function.VectorMultiply(Function.GetNormalization(new PointF(character.position.X - this.position.X, character.position.Y - this.position.Y)), 150),
                                                 20, this.kind));
             }
+
+            // update taking dmg
+            for (int i = 0; i < world.bullets.Count;)
+            {
+                if (Function.checkCollision(world.bullets[i].position.X + world.bullets[i].radius / 2, world.bullets[i].position.Y + world.bullets[i].radius / 2, world.bullets[i].radius,
+                   new Rectangle((int)position.X, (int)position.Y, width, height)) &&
+                   world.bullets[i].kind != kind)
+                {
+                    curHealth -= world.bullets[i].damage;
+                    world.bullets.RemoveAt(i);
+                }
+                else
+                {
+                    i++;
+                }
+            }
         }
 
         public override void Draw(Graphics gfx, int xCam, int yCam)
@@ -135,7 +151,6 @@ namespace ConsoleApp3
             {
                 gfx.DrawImage(bmpMirror, new Rectangle((int)position.X - xCam, (int)position.Y - yCam, 48, 46), 48 * (8 - curFrame), 0, 48, 46, GraphicsUnit.Pixel);
             }
-            gfx.DrawString(curDirectionTime.ToString(), new Font("Times New Roman", 20), new SolidBrush(Color.Black), new Point(120, 150));
         }
     }
 }

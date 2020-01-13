@@ -18,6 +18,9 @@ namespace ConsoleApp3
         private int curFrame;
         private float timeToNextFrame; // only update frame when timeToNextFrame = 0
 
+        float invulnerableTime; // this give Zero a mini invulnerable time when he take damage
+                                // in this time, he wont take any damage
+
         bool shooting;
 
         public Zero(Point location, int width, int height, float health, int kind = 0)
@@ -206,14 +209,26 @@ namespace ConsoleApp3
                 timeToNextAtk = 0.15f;
             }
 
+            #endregion
+
+            #region update taking damage
+            if (invulnerableTime > 0)
+            {
+                invulnerableTime -= (float)dt;
+            }
             for (int i = 0; i < world.bullets.Count;)
             {
                 if (Function.checkCollision(world.bullets[i].position.X + world.bullets[i].radius / 2, world.bullets[i].position.Y + world.bullets[i].radius / 2, world.bullets[i].radius,
                    new Rectangle((int)position.X, (int)position.Y, width, height)) &&
                    world.bullets[i].kind != kind)
                 {
-                    curHealth -= world.bullets[i].damage;
+                    if (invulnerableTime <= 0)
+                    {
+                        curHealth -= world.bullets[i].damage;
+                        invulnerableTime = 2f;
+                    }
                     world.bullets.RemoveAt(i);
+
                 }
                 else
                 {
@@ -260,6 +275,17 @@ namespace ConsoleApp3
 
         public new void Draw(Graphics gfx, int xCam, int yCam)
         {
+            gfx.DrawRectangle(new Pen(new SolidBrush(Color.Blue), 3), new Rectangle(15, 29, 106, 20));
+            gfx.FillRectangle(new SolidBrush(Color.Green), new Rectangle(18, 32, (int)(curHealth * 100 / maxHealth), 15));
+
+            if (invulnerableTime > 0)
+            {
+                Random rd = new Random();
+                if(rd.Next(0,5) > 3)
+                {
+                    return;
+                }
+            }
             int yFrame;
             if(shooting)
             {
@@ -293,6 +319,17 @@ namespace ConsoleApp3
             {
                 gfx.DrawImage(bmpMirror, new Rectangle((int)position.X - xCam - 17, (int)position.Y - yCam - 11, 66, 82), 66*(9-0), yFrame * 82, 66, 82, GraphicsUnit.Pixel);
             }
+        }
+
+        public override void ApplyDmg(float dmg)
+        {
+            if(invulnerableTime > 0)
+            {
+                return;
+            }
+            curHealth -= dmg;
+            invulnerableTime = 2f;
+            return;
         }
     }
 }
